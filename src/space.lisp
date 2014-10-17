@@ -5,21 +5,66 @@
         :cl-charms))
 (in-package :space)
 
+(defstruct cell tile color)
+(defstruct player health cells)
 
 (defparameter *width* 0)
 (defparameter *height* 0)
+(defparameter *cells* (make-hash-table :test 'equal))
 (defparameter *running* t)
+(defparameter *player* '())
 
 (defparameter red 1)
 (defparameter blue 2)
 (defparameter green 3)
 
 
+(defun move-right (cell)
+  (let* ((x (car cell))
+         (new-cell (cons (1+ x) (car cell))))
+    (setf (gethash cell *cells*) new-cell )
+    (remhash cell *cells*)))
+
+(defun move-left (cell)
+  (let* ((x (car cell))
+         (new-cell (cons (1- x) (car cell))))
+    (setf (gethash cell *cells*) new-cell )
+    (remhash cell *cells*)))
+
+(defun create-cell (x y tile color)
+  (let ((coords (cons x y )))
+    (setf (gethash coords *cells*)
+          (make-cell :tile tile 
+                     :color color))))
+
+*cells*
+(defun kill-all (key val)
+  (format t "removed ~A~%" val)
+  (remhash key *cells*)
+  )
+
+(defun log-cell (key val)
+  (format t "~A~A~%" key val))
+
+(equal (cons 6 6) '(6 . 6))
+
+(maphash  #'kill-all *cells*)
+(maphash  #'log-cell *cells*)
+(remhash (cons 6 6) *cells*)
+
+(let* ((key (cons 6 6))
+       (val (gethash '(6 . 6) *cells*)))
+  ( format t "key ~A~% " (car key))
+  ( format t "val ~A~% " val)
+  
+  )
 (defun set-w-and-h ()
   (multiple-value-bind (w h)
     (window-dimensions *standard-window*)
     (setf *width* w)
-    (setf *height* h)))
+    (setf *height* h)
+    (setf *cells* (make-hash-table :size (* w h) :test 'equal))
+    ))
 
 (defun init ()
   (set-w-and-h)
@@ -42,6 +87,8 @@
  (let ((c (get-char *standard-window* :ignore-error t)))
   (case c
     ((nil) nil)
+    ((#\l) (move-left *player*))   
+    ((#\h) (move-right *player*))   
     ((#\q) (quit)))))
 
 (defmacro with-color (color &body body)
@@ -50,14 +97,23 @@
      ,@body
      (cl-charms/low-level:attroff (cl-charms/low-level:color-pair ,color))))
 
+(defun draw-cell (coords cell)
+  (with-color (cell-color cell)
+    (write-char-at-point  *standard-window* 
+                         (cell-tile cell)   
+                         (car coords) 
+                         (cdr coords))))
+
 
 (defun update-world ()
-  
+  (create-cell 2 2 #\# red)
+  (create-cell 2 3 #\$ blue)
+  (create-cell 2 4 #\# red)
   )
 
+(update-world)
 (defun draw-world ()
-  
-  )
+  (maphash #'draw-cell *cells*))
 
 (defun main ()
   (with-curses  ()
@@ -69,4 +125,4 @@
           (update-world)   
           (draw-world))))
 
- ;(main)
+;(main)
