@@ -19,17 +19,20 @@
 (defparameter green 3)
 
 
-(defun move-right (cell)
-  (let* ((x (car cell))
-         (new-cell (cons (1+ x) (car cell))))
-    (setf (gethash cell *cells*) new-cell )
-    (remhash cell *cells*)))
 
-(defun move-left (cell)
-  (let* ((x (car cell))
-         (new-cell (cons (1- x) (car cell))))
-    (setf (gethash cell *cells*) new-cell )
-    (remhash cell *cells*)))
+(defun move-cell-right (x y)
+  (let* ((key (cons x y))
+         (new-key (cons (1+ x) y))
+         (val (gethash key *cells*)))
+    (remhash key *cells*)
+    (setf (gethash new-key *cells*) val)))
+
+(defun move-cell-left (x y)
+  (let* ((key (cons x y))
+         (new-key (cons (1- x) y))
+         (val (gethash key *cells*)))
+    (remhash key *cells*)
+    (setf (gethash new-key *cells*) val)))
 
 (defun create-cell (x y tile color)
   (let ((coords (cons x y )))
@@ -48,8 +51,11 @@
 
 (equal (cons 6 6) '(6 . 6))
 
+(move-cell-right 0 2)
+
 (maphash  #'kill-all *cells*)
 (maphash  #'log-cell *cells*)
+(gethash '(2 . 2) *cells* 
 (remhash (cons 6 6) *cells*)
 
 (let* ((key (cons 6 6))
