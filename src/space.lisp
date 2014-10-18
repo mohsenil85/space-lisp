@@ -5,6 +5,12 @@
         :cl-charms))
 (in-package :space)
 (defstruct player health cells)
+;;cells = a list of coords.  
+;; looks like:
+
+;     A
+;   <}V{>
+
 
 (defparameter *width* 0)
 (defparameter *height* 0)
@@ -21,8 +27,7 @@
     (window-dimensions *standard-window*)
     (setf *width* w)
     (setf *height* h)
-    (setf *cells* (make-hash-table :size (* w h) :test 'equal))
-    ))
+    (setf *cells* (make-hash-table :size (* w h) :test 'equal))))
 
 (defun init ()
   (set-w-and-h)
@@ -36,7 +41,10 @@
   (cl-charms/low-level:init-pair blue 
        cl-charms/low-level:color_blue charms/ll:color_black )
   (cl-charms/low-level:init-pair green 
-        cl-charms/low-level:color_green charms/ll:color_black ))
+        cl-charms/low-level:color_green charms/ll:color_black )
+  ()
+  
+  )
 
 (defun quit ()
   (setf *running* nil))
@@ -63,6 +71,16 @@
                          (cdr coords))))
 
 
+;     A
+;   <}V{>
+(defun create-player ()
+  (let ((orig (floor (/ *width* 2 ))))
+   (list (create-cell orig 0 #\V blue )) 
+   (create-cell (+ 1 orig) 0 #\V red ) 
+   (create-cell (- 1 orig) 0 #\V red ) ))
+
+
+
 (defun update-world ()
   (create-cell 2 2 #\# red)
   (create-cell 2 3 #\$ blue)
@@ -83,4 +101,3 @@
           (update-world)   
           (draw-world))))
 
-;(main)
