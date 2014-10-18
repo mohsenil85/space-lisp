@@ -4,80 +4,16 @@
   (:use :cl
         :cl-charms))
 (in-package :space)
-
-(defstruct cell tile color)
 (defstruct player health cells)
 
 (defparameter *width* 0)
 (defparameter *height* 0)
-(defparameter *cells* (make-hash-table :test 'equal))
 (defparameter *running* t)
 (defparameter *player* '())
 
 (defparameter red 1)
 (defparameter blue 2)
 (defparameter green 3)
-
-
-(defun translate-cell (cell dir)
-  (let ((x (car cell))
-        (y (cdr cell)))
-    (ecase dir
-      (:up (cons x (1- y)))
-      (:down (cons x (1+ y)))
-      (:right (cons (1+ x) y))
-      (:left (cons (1- x) y))))) 
-
-(let* ((k (cons 3 3))
-       (c (create-cell 3 3 #\# blue)))
- (move-cell 3 3  :up) 
-  )
-
-
-
-(defun move-cell (x y dir)
-  (let* ((key (cons x y))
-         (new-key (translate-cell key dir))
-         (val (gethash key *cells*)))
-    (remhash key *cells*)
-    (setf (gethash new-key *cells*) val)))
-
-(defun move-cell-left (x y)
-  (let* ((key (cons x y))
-         (new-key (cons (1- x) y))
-         (val (gethash key *cells*)))
-    (remhash key *cells*)
-    (setf (gethash new-key *cells*) val)))
-
-(defun create-cell (x y tile color)
-  (let ((coords (cons x y )))
-    (setf (gethash coords *cells*)
-          (make-cell :tile tile 
-                     :color color))))
-
-;*cells*
-;(defun kill-all (key val)
-;  (format t "removed ~A~%" val)
-;  (remhash key *cells*)
-;  )
-;
-(defun log-cell (key val)
-  (format t "~A~A~%" key val))
-;
-;(equal (cons 6 6) '(6 . 6))
-;
-;(move-cell-right 2 4)
-;  (create-cell 2 4 #\# red)
-;
-;(maphash  #'kill-all *cells*)
-(maphash  #'log-cell *cells*)
-;(gethash '(2 . 2) *cells* 
-;(remhash (cons 6 6) *cells*)
-;
-;(let* ((key (cons 6 6))
-;       (val (gethash '(6 . 6) *cells*)))
-;  ( format t "key ~A~% " (car key))
-;  ( format t "val ~A~% " val) ;  ;  )
 
 
 (defun set-w-and-h ()

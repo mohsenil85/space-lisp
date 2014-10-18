@@ -13,8 +13,10 @@
   :license ""
   :depends-on (:cl-charms)
   :components ((:module "src"
-                :components
-                ((:file "space"))))
+                :serial t
+                :components ((:file "package")
+                             (:file "cell-utils" :depends-on ("package"))
+                             (:file "space" :depends-on ("package")))))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames

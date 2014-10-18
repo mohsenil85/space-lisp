@@ -1,13 +1,8 @@
-(in-package :cl-user)
-(defpackage cell-utils
-  (:use :cl))
-(in-package :cell-utils)
+(in-package :space)
 
 (defstruct cell tile color)
 
 (defparameter *cells* (make-hash-table :test 'equal))
-
-
 
 (defun translate-cell (cell dir)
   (let ((x (car cell))
