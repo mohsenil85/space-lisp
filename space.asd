@@ -15,8 +15,10 @@
   :components ((:module "src"
                 :serial t
                 :components ((:file "package")
-                             (:file "cell-utils" :depends-on ("package"))
-                             (:file "space" :depends-on ("package")))))
+                             (:file "utils" :depends-on ("package"))
+                             (:file "init" :depends-on ("package"))
+                             (:file "space" :depends-on ("package"))
+                             )))
   :description ""
   :long-description
   #.(with-open-file (stream (merge-pathnames
