@@ -1,6 +1,7 @@
 ;(in-package :cl-user)
 ;(ql:quickload "cl-charms")
 ;(ql:quickload "perlin")
+;(ql:quickload "space")
 ;(defpackage space
 ;  (:use :cl
 ;        :cl-charms
@@ -37,21 +38,31 @@
 (defun num-to-char (num)
   (cond
     ((< num .4 ) #\~)
-    ((< num .6 ) #\o)
+;    ((< num .6 ) #\o)
     ((< num .7 ) #\^)
-    ((< num .8 ) #\()
+;    ((< num .8 ) #\()
     ((< num .9 ) #\+)
     (t #\$)))
 
 (defun update-world ()
   )
 
+(defun char-point-color (color chr i j)
+  (with-color color
+    (write-char-at-point *standard-window* chr i j )))
 
 (defun draw-map-cell (i j)
-  (write-char-at-point *standard-window*
-                       (num-to-char (aref *grid* j i))
-                       i j
-                       )
+  (let ((chr (num-to-char (aref *grid* j i))))
+    (case chr
+      ((#\~) (char-point-color +blue+ chr i j))
+      ((#\^) (char-point-color +red+ chr i j))
+      ((#\+) (char-point-color +green+ chr i j))
+      (otherwise (write-char-at-point *standard-window* chr i j))
+      )
+    )
+;  (write-char-at-point *standard-window*
+;                       (num-to-char (aref *grid* j i))
+;                       i j)
   
   )
 
@@ -62,11 +73,5 @@
         (loop :for j 
               :below    *height*
               :do
-              (draw-map-cell i j)
-               
-              )
-        )
-  
-  )
-
+              (draw-map-cell i j))))
 
