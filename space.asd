@@ -17,6 +17,8 @@
                 :components ((:file "package")
                              (:file "utils" :depends-on ("package"))
                              (:file "init" :depends-on ("package"))
+                             (:file "map" :depends-on ("package"))
+                             (:file "player" :depends-on ("package"))
                              (:file "space" :depends-on ("package"))
                              )))
   :description ""

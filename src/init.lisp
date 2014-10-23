@@ -1,5 +1,9 @@
 (in-package :space)
 
+
+(defparameter *world-width* 0)
+(defparameter *world-height* 0)
+
 (defparameter *width* 0)
 (defparameter *height* 0)
 (defparameter *running* t)
@@ -8,13 +12,19 @@
 (defconstant +red+ 1)
 (defconstant +blue+ 2)
 (defconstant +green+ 3)
+(defconstant +yellow+ 4)
+(defconstant +magenta+ 5)
+(defconstant +cyan+ 6)
 
 
 (defun set-w-and-h ()
   (multiple-value-bind (w h)
     (window-dimensions *standard-window*)
     (setf *width* (-  w 1))
-    (setf *height* (- h 1))))
+    (setf *height* (- h 1))
+    (setf *world-width* (* *width* 3))
+    (setf *world-height* (* *height* 3))
+    ))
 
 (defun init ()
   (set-w-and-h)
@@ -29,12 +39,13 @@
        cl-charms/low-level:color_blue charms/ll:color_black )
   (cl-charms/low-level:init-pair +green+ 
         cl-charms/low-level:color_green charms/ll:color_black )
-  (setf *grid* (perlin2d-grid   *width*    *height* 0.1 4) )
-  )
-
-(defun testfun ())
-(defun move-left ())
-(defun move-right ())
+  (cl-charms/low-level:init-pair +yellow+ 
+        cl-charms/low-level:color_yellow  charms/ll:color_black )
+  (cl-charms/low-level:init-pair +magenta+ 
+        cl-charms/low-level:color_magenta  charms/ll:color_black )
+  (cl-charms/low-level:init-pair +cyan+ 
+        cl-charms/low-level:color_cyan  charms/ll:color_black )
+  (setf *grid* (perlin2d-grid   *world-width* *world-height*  0.1 4) ))
 
 
 (defun quit ()
@@ -47,14 +58,33 @@
      ,@body
      (cl-charms/low-level:attroff (cl-charms/low-level:color-pair ,color))))
 
-
-(defun main ()
-  (with-curses  ()
-    (init)
+(defun game-loop ()
     (loop :named main-loop
           :while *running*
           :do
           (get-input)
           (update-world)   
-          (draw-world))))
+          (draw-world))  )
+
+(defun start-screen ()
+  (let ((w (make-window *width* *height* 0 0 )  )) 
+    (write-string-at-point w
+                           (format nil "welcome")
+                           0 0) 
+    (loop :named start-loop
+          :for c := (get-char w :ignore-error t)
+          :do
+          (case c
+            ((#\Space) (progn
+                        (destroy-window w)
+    ;                    (game-loop)      
+                         (return-from start-loop)
+                         ))))))
+
+(defun main ()
+  (with-curses  ()
+    (init)
+    (start-screen)
+    (game-loop)
+    ))
 
